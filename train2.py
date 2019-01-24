@@ -18,10 +18,16 @@ if __name__ == '__main__':
                   )
     # model.load_weights('path.h5')
 
-    datagen = ImageDataGenerator(preprocessing_function=ka.resnet50.preprocess_input)
-    train_data = datagen.flow_from_directory('train', target_size=(224, 224), batch_size=10)
-    test_data = datagen.flow_from_directory('validation', target_size=(224, 224), batch_size=10)
-    history = model.fit_generator(train_data, epochs=10000, validation_data=test_data, steps_per_epoch=1, validation_steps=1)
+    datagen = ImageDataGenerator(preprocessing_function=ka.resnet50.preprocess_input,
+                                                 rotation_range=0.2,
+                 width_shift_range=0.1,
+                 height_shift_range=0.1,
+                 horizontal_flip=True,
+                 vertical_flip=False,
+)
+    train_data = datagen.flow_from_directory('train', target_size=(224, 224), batch_size=32)
+    test_data = datagen.flow_from_directory('validation', target_size=(224, 224), batch_size=32)
+    history = model.fit_generator(train_data, epochs=10000, validation_data=test_data)
     model.save_weights('fish.h5')
     tfjs.converters.save_keras_model(model, 'here')
     plt.plot(history.history['loss'])
