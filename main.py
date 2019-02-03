@@ -9,6 +9,7 @@ import pymongo
 import  json
 import tensorflow as tf
 from bson.objectid import ObjectId
+from keras_applications.resnet50 import preprocess_input 
 
 def getmodel(cls=2):
     base_model = ka.nasnet.NASNetMobile(weights='imagenet', pooling='avg')
@@ -34,9 +35,10 @@ def predict(path):
     with graph.as_default():
         img = Image.open(path).resize((224, 224))
         img = np.array(img).reshape((1, 224, 224, 3))
-        img = img.astype('float32')
-        img /= 127.5
-        img -= 1
+        img = preprocess_input(img)
+#         img = img.astype('float32')
+#         img /= 127.5
+#         img -= 1
         return model.predict(img)
 
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
